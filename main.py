@@ -12,7 +12,6 @@ CSV_FILE = 'extract.csv'
 # AUDIO_BOOK_PATTERN = '<a href= "http://www.audible.com'
 
 findings = {}
-soup = {}
 
 print "Fetching XML"
 urllib.urlretrieve (FEED_URL, FEED_FILE)
