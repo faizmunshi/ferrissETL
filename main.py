@@ -2,6 +2,7 @@
 import urllib
 import xmltodict
 import unicodecsv
+import re
 from bs4 import BeautifulSoup
 
 import json
@@ -13,12 +14,31 @@ CSV_FILE = 'extract.csv'
 
 findings = {}
 
-print "Fetching XML"
+print "Fetching HTML"
 urllib.urlretrieve (FEED_URL, FEED_FILE)
 
 with open(FEED_FILE) as fd:
     doc = xmltodict.parse(fd.read())
 
+
+#scrape podcast links and extract relevant links for each podcast page
+page = urllib.urlopen("http://fourhourworkweek.com/podcast/").read()
+# print page
+podcastLinks = BeautifulSoup(page, "html.parser")
+# print(podcastLinks.find_all('a'))
+for link in podcastLinks.find_all(class_='podcast'):
+        # if link != "None":
+        # if link.get('href').find("amazon") > 1:
+            print link.find('a').get('href')
+            pPage = urllib.urlopen(link.find('a').get('href')).read()
+            podcastPage = BeautifulSoup(pPage, "html.parser")
+            for link in podcastPage.find_all(href=re.compile("amazon")):
+            #     if link.get('href').find("amazon") > 1:
+                    print link
+
+
+
+#needs editing
 for item in doc['rss']['channel']['item']:
     	findings[item['title']] = item['description']
     	soup = BeautifulSoup(item['description'], "html.parser")
