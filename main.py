@@ -23,34 +23,32 @@ with open(FEED_FILE) as fd:
 
 #scrape podcast links and extract relevant links for each podcast page
 page = urllib.urlopen("http://fourhourworkweek.com/podcast/").read()
-# print page
 podcastLinks = BeautifulSoup(page, "html.parser")
-# print(podcastLinks.find_all('a'))
 for link in podcastLinks.find_all(class_='podcast'):
-        # if link != "None":
-        # if link.get('href').find("amazon") > 1:
             print link.find('a').get('href')
+            pageLink = link.find('a').get('href')
+            findings[pageLink] = []
             pPage = urllib.urlopen(link.find('a').get('href')).read()
             podcastPage = BeautifulSoup(pPage, "html.parser")
             for link in podcastPage.find_all(href=re.compile("amazon")):
-            #     if link.get('href').find("amazon") > 1:
+                    findings[pageLink].append(link.get('href'))
                     print link
 
 
 
 #needs editing
-for item in doc['rss']['channel']['item']:
-    	findings[item['title']] = item['description']
-    	soup = BeautifulSoup(item['description'], "html.parser")
+# for item in doc['rss']['channel']['item']:
+    	# findings[item['title']] = item['description']
+    	# soup = BeautifulSoup(item['description'], "html.parser")
         # print(soup.find('a'))
-    	findings[item['title']] = []
+    	# findings[item['title']] = []
     	# link_enum = 0
 
-        for link in soup.find_all('a'):
+        # for link in soup.find_all('a'):
             # print(link.get('href'))
-            if link.get('href').find("amazon") > 1:
+            # if link.get('href').find("amazon") > 1:
                 # findings[item['title']][link_enum] = {}
-                findings[item['title']].append(link.get('href'))
+                # findings[item['title']].append(link.get('href'))
                 # findings[item['title']][link_enum]['type'] = 'Book?'
                 # link_enum += 1
                 # print link.get('href')
@@ -63,13 +61,13 @@ for item in doc['rss']['channel']['item']:
 
 
 with open(CSV_FILE, 'w') as csvfile:
-    	fieldnames = ['Episode', 'Description']
+    	fieldnames = ['Podcast', 'Book List']
     	writer = unicodecsv.DictWriter(csvfile, fieldnames=fieldnames)
     	writer.writeheader()
 
         for ep in findings:
             for link in findings[ep]:
-                writer.writerow({'Episode': ep, 'Description':link})
+                writer.writerow({'Podcast': ep, 'Book List':link})
 
 
 #if removing the below, remove import
